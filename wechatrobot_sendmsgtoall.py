@@ -148,28 +148,6 @@ class Customer(object):
 		cnt += 1
 
 ################################################公共函数
-#
-def get_friend_status(friend):
-	global mainInstance
-	CHATROOM = 'testgroup'
-	ownAccount = mainInstance.get_friends(update=True)[0]
-	if friend['UserName'] == ownAccount['UserName']:
-		return u'检测到本人账号。'
-	elif mainInstance.search_friends(userName=friend['UserName']) is None:
-		return u'该用户不在你的好友列表中。'
-	else:
-		chatroom = CHATROOM or get_chatroom()
-		if chatroom is None: return CHATROOM_MSG
-		r = mainInstance.add_member_into_chatroom(chatroom['UserName'], [friend])
-		if r['BaseResponse']['ErrMsg'] == '':
-			status = r['MemberList'][0]['MemberStatus']
-			mainInstance.delete_member_from_chatroom(chatroom['UserName'], [friend])
-			return { 3: u'该好友已经将你加入黑名单。',
-				4: u'该好友已经将你删除。', }.get(status,
-				u'该好友仍旧与你是好友关系。')
-		else:
-			return u'无法获取好友状态，预计已经达到接口调用限制。'
-
 #异常处理
 def myException(whichStep,log,e):
 	global outputfile
@@ -361,8 +339,10 @@ try:
 	mainInstance.run()
 except Exception as e:
 	myException("STEP OF mainprocess","main",e)
+	outputfile.close()
 else:
 	pass
 finally:
 	pass
+
 print 'THE END'
